@@ -1,0 +1,13 @@
+// ATT&CK: T1112 - Modify Registry
+// Description: Black Basta ransomware will create a new registry key to associate an icon with the .basta extension (V1), or the generated 9-character alphanumeric extension (V2) for encrypted files
+SecurityEvent
+| where EventID == 4657
+| parse ObjectName with "\\REGISTRY\\" RegistryKey
+| where RegistryKey has "\\Classess\\.basta\\DefaultIcon" or RegistryKey matches regex @"Classes\\[0-9a-zA-Z]{9}\\DefaultIcon"
+| where NewValue == "%\\AppData\\Local\\Temp\\fkdjsadasd.ico"
+| project TimeGenerated, Computer, RegistryKey, NewValue, OldValue, ProcessName, Account, Type
+| union (DeviceRegistryEvents
+| where ActionType == "RegistryValueSet"
+| where RegistryKey has "\\Classes\\.basta\\DefaultIcon" or RegistryKey matches regex @"Classes\\[0-9a-zA-Z]{9}\\DefaultIcon"
+| where RegistryValueData has "%\\AppData\\Local\\Temp\\fkdjsadasd.ico"
+| project TimeGenerated=Timestamp, Computer=DeviceName, RegistryKey, RegistryValueName, NewValue=RegistryValueData, OldValue=PreviousRegistryValueData, Account=InitiatingProcessAccountName, InitiatingProcessId, InitiatingProcessCommandLine, InitiatingProcessSHA1, InitiatingProcessParentFileName, Type)

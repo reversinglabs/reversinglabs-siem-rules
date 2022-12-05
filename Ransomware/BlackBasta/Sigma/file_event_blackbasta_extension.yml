@@ -1,0 +1,34 @@
+title: Black Basta file extension
+id: 5ae3e979-fa23-4ef8-9d5b-9bdc68094ee1
+status: experimental
+description: Detects files that have been renamed with the .basta extension.
+references:
+    - https://research.nccgroup.com/2022/06/06/shining-the-light-on-black-basta/
+    - https://unit42.paloaltonetworks.com/threat-assessment-black-basta-ransomware/
+author: Aaron Hoffmann
+date: 2022/11/30
+modified: 2022/11/30
+tags:
+    - attack.impact
+    - attack.t1486
+logsource:
+    category: file_rename
+    product: windows
+detection:
+    selection:
+        OriginalFilename|endswith:
+            - '.lnk'
+            - '.rtf'
+            - '.pst'
+            - '.docx'
+            - '.xlsx'
+            - '.jpg'
+            - '.jpeg'
+            - '.png'
+            - '.pdf'
+        TargetFilename|endswith:
+            - '.basta'
+    condition: selection
+falsepositives:
+     - Unlikely
+level: medium

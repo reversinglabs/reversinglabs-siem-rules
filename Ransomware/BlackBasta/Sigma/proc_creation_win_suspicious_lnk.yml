@@ -1,0 +1,22 @@
+title: Process launch LNK file in suspicious location
+id: cef2eecb-65dd-4f44-bbca-a0a9028aef66
+status: experimental
+description: |
+  Detects when a process launches a .LNK file in suspicious locations, typically seen by phishing tools.
+references:
+author: Aaron Hoffmann
+date: 2022/11/30
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection1:
+        - Filename|endswith: '.lnk'
+        - Filename|startswith: 'c:\Users\'
+    selection2:
+        - Filename|endswith: '.lnk'
+        - Filename|startswith: '\Temp\'
+    condition: (selection1 OR selection2)
+falsepositives:
+    - Cases in which a user mounts an image file for legitimate reasons
+level: medium

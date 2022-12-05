@@ -1,0 +1,6 @@
+// ATT&CK: T1018 - Remote system discovery
+// Description: BlackBasta has been seen storing IP addresses for targeted systems in C:\windows\pc_list
+DeviceFileEvents
+| where ActionType == "FileCreated"
+| where FolderPath has "c:\\windows\\"
+| where FileName == "pc_list"

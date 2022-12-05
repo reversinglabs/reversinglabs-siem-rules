@@ -1,0 +1,37 @@
+Filehash,ThreatName,FileType
+b363e038a6d6326e07a02e7ff99d82852f8ec2d2,Linux.Ransomware.BlackBasta,ELF64 Little/Exe
+8ccac360e2ca37b2fa9f5fa81b22114fb8936120,Linux.Ransomware.BlackBasta,ELF64 Little/Exe
+ff285e80cfcdf400909561cceb181006be8b5d85,Linux.Trojan.FileCoder,ELF64 Little/Exe
+6a9a4cbcc63c8e185cc03dd8df00cf0c1600b026,Linux.Ransomware.BlackBasta,ELF64 Little/Exe
+bd16759475861864b5068ec01cbf7068456d5b60,Win32.Ransomware.Basta,MZ/DOS
+e855b62afcb6b1b235be39858223ead8271f1b1e,DOS.Trojan.Generic,MZ/DOS
+940e36c4af473c6951c14534b551810744ff9014,Win32.Ransomware.Basta,MZ/DOS
+c7a37c0edeffd23777cca44f9b49076be1bd43e6,Win32.Ransomware.BlackBasta,PE/Exe
+b87a947f3e85701fcdadd733e9b055a65a3b1308,Win32.Ransomware.BastaCrypt,PE/Exe
+bd0bf9c987288ca434221d7d81c54a47e913600a,Win32.Ransomware.Basta,PE/Exe
+a996ccd0d58125bf299e89f4c03ff37afdab33fc,Win32.Ransomware.Basta,PE/Exe
+9f367888dd098a0c1e1a6f02a6377f8703c00787,Win32.Ransomware.Basta,PE/Exe
+5e5ba5e33929e5992a2a2b77a7ae32abe8719668,Win32.Ransomware.Basta,PE/Exe
+af987e52c15dc5b21d379a86192bc0a917765489,Win32.Ransomware.Basta,PE/Exe
+f4553d3aa92d4c97353645451c531881e8f0991a,Win32.Ransomware.Basta,PE/Exe
+e6cf2d6fc1c33754457506f54ab57f46ae957567,Win32.Ransomware.Basta,PE/Exe
+38b8544e22b4b696cdbacff1ac5f33880d9581f1,Win32.Ransomware.REntS,PE/Exe
+cc7ea6bb6787df664adb69022546c42f5f409653,Win32.Ransomware.Basta,PE/Exe
+579b245a6609903d804f957083b9e0b2ed145f5a,Win32.Ransomware.Basta,PE/Exe
+3c13c1e54d2d7991c1c3452ae89888a8e7a47763,Win32.Ransomware.Basta,PE/Exe
+1f439569e3c1c14ea9f02235f8f45c49e2764160,Win32.Ransomware.Basta,PE/Exe
+74dbf463be3139a28d9851b3b80c2ecac3e56304,Win32.Ransomware.Basta,PE/Exe
+04c144cb3e89982feb56e8727fa116b7537c20d9,Win32.Ransomware.BBasta,PE/Exe
+53628c7a155ccb7af1135140083939018d3587f1,Win32.Ransomware.BlackBASTA,PE/Exe
+c33b4f9baaf9feebac4c7d0bf75be5a7880412d7,Win64.Ransomware.Basta,PE+/Dll
+acad7a91c2812a0652d62f252774454c217666e9,Win64.Ransomware.Basta,PE+/Exe
+3e3b113a5ab64e03ffe86e0fa9a2163816f9ecdf,Win64.Ransomware.BlackBASTA,PE+/Exe
+648f40b1cc77ab6b34013f696f1c07d7adf303cf,,Image/ICO
+61f514debf7cf6b199b7d1b72b7d7d5768eb2586,Win32.Ransomware.Basta,PE/Exe
+b1b3d7d20ccad8130723d5114c64b66afa8011d4,Win32.Ransomware.Basta,PE/Exe
+d32e44f7e04a8c84e7159ed020dcf26b6e51416e,Win32.Ransomware.Basta,PE/Dll
+6257f732bfc75408b14a445c224e2a78,,Image/ICO
+3889abc62b9c643a2c99ce13e6230296c8288e9d,,Image/JPEG
+1f439569e3c1c14ea9f02235f8f45c49e2764160,Win32.Ransomware.Basta,PE/Exe
+f4553d3aa92d4c97353645451c531881e8f0991a,Win32.Ransomware.Basta,PE/Exe
+f8c5c36f0e5ad26ae987c1c9d097818944c9669e,Win32.Ransomware.Basta,PE/Exe

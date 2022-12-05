@@ -1,0 +1,8 @@
+// ATT&CK: T1486 - Data Encrypted for Impact
+// Description: Detects changes to the desktop wallpaper via the registry to the Black Basta (V1) ransom note
+DeviceRegistryEvents
+| where ActionType == "RegistryValueSet"
+| where RegistryKey matches regex @"HKEY_CURRENT_USER\\.*\\Control Panel\\Desktop"
+| where RegistryValueName == "Wallpaper"
+| where NewRegistryValueData contains "dlaksjdoiwq.jpg"
+| project TimeGenerated, DeviceId, DeviceName, RegistryKey, NewRegistryValueData=RegistryValueData, InitiatingProcessAccountName, InitiatingProcessCommandLine, InitiatingProcessId, InitiatingProcessParentFileName

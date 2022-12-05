@@ -1,0 +1,7 @@
+// ATT&CK: T1566 - Phishing: Spear-phishing attachment
+// Description: This query looks for processes that launch .LNK files in suspicious locations. Phishing kits are known for this behavior.
+DeviceProcessEvents
+| where ActionType == "ProcessCreated"
+| where FolderPath startswith "C:\\Users" or FolderPath contains "\\Temp\\"
+| where FolderPath !has "\\AppData\\Roaming\\Microsoft\\Windows\\"
+| where FileName contains ".LNK"

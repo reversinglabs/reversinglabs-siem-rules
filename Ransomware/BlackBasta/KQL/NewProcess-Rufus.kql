@@ -1,0 +1,11 @@
+// ATT&CK: T1036 - Masquerading
+// Description: look for new processes relating to rufus, the usb creation tool
+SecurityEvent
+| where EventID == 4688
+| where Process matches regex "rufus-.*.exe"
+| project TimeGenerated, Computer, Account=SubjectUserName, AccountDomain=SubjectDomainName, Process, NewProcessName, ParentProcessName, ProcessId=tolong(NewProcessId), TokenElevationType, Type
+| union 
+(DeviceProcessEvents
+| where FileName matches regex "rufus-.*.exe"
+| project TimeGenerated, Computer=DeviceName, Account=AccountName, AccountDomain, Process=FileName, NewProcessName=FolderPath, ParentProcessName=InitiatingProcessFolderPath, ProcessId, MD5, SHA1, SHA256, Type)
+| project TimeGenerated, Computer, Account, AccountDomain, Process, NewProcessName, ParentProcessName, ProcessId, MD5, SHA1, SHA256, Type
