@@ -9,8 +9,8 @@ author: Aaron Hoffmann
 date: 2022/12/05
 modified: 2022/12/05
 tags:
-    - attack.execution
-    - attack.t1112
+    - attack.impact
+    - attack.t1491
 logsource:
     category: registry_set
     product: windows

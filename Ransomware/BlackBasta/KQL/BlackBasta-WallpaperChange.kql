@@ -1,4 +1,4 @@
-// ATT&CK: T1486 - Data Encrypted for Impact
+// ATT&CK: T1491 - Defacement
 // Description: Detects changes to the desktop wallpaper via the registry to the Black Basta (V1) ransom note
 DeviceRegistryEvents
 | where ActionType == "RegistryValueSet"
