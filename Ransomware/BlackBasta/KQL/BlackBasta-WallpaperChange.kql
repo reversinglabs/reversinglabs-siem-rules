@@ -1,8 +1,15 @@
 // ATT&CK: T1491 - Defacement
-// Description: Detects changes to the desktop wallpaper via the registry to the Black Basta (V1) ransom note
-DeviceRegistryEvents
+// Description: Detects changes to the desktop wallpaper via the registry to the Black Basta ransom note
+SecurityEvent
+| where EventID == 4657
+| parse ObjectName with "\\REGISTRY\\" RegistryKey
+| where RegistryKey matches regex @"USER\\.*\\Control Panel\\Desktop"
+| where ObjectName == "Wallpaper"
+| where NewValue has "dlaksjdoiwq.jpg"
+| project TimeGenerated, Computer, RegistryKey, NewValue, OldValue, ProcessName, Account, Type
+| union (DeviceRegistryEvents
 | where ActionType == "RegistryValueSet"
 | where RegistryKey matches regex @"HKEY_CURRENT_USER\\.*\\Control Panel\\Desktop"
 | where RegistryValueName == "Wallpaper"
-| where NewRegistryValueData contains "dlaksjdoiwq.jpg"
-| project TimeGenerated, DeviceId, DeviceName, RegistryKey, NewRegistryValueData=RegistryValueData, InitiatingProcessAccountName, InitiatingProcessCommandLine, InitiatingProcessId, InitiatingProcessParentFileName
+| where RegistryValueData has "dlaksjdoiwq.jpg"
+| project TimeGenerated=Timestamp, DeviceId, DeviceName, RegistryKey, NewRegistryValueData=RegistryValueData, InitiatingProcessAccountName, InitiatingProcessCommandLine, InitiatingProcessId, InitiatingProcessParentFileName, Type)
