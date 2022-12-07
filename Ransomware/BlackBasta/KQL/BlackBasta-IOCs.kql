@@ -1,0 +1,14 @@
+// detect Black Basta IOCs in CEF and MDE logs
+let BlackBastaIOCs = externaldata(SHA1:string)
+[
+    @"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Ransomware/BlackBasta/blackbasta_iocs.csv"
+] with (format="csv");
+(union isfuzzy=true
+(CommonSecurityLog
+| where isnotempty(FileHash)
+| join kind=inner BlackBastaIOCs on $left.FileHash == $right.SHA1
+| extend timestamp = TimeGenerated, HostCustomEntity = SourceHostName),
+(DeviceFileEvents
+| where isnotempty(SHA256)
+| join kind=inner BlackBastaIOCs on $left.SHA1 == $right.SHA1
+| extend timestamp = TimeGenerated, HostCustomEntity = DeviceName))

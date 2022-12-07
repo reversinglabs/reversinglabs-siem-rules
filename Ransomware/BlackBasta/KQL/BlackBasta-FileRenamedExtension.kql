@@ -1,6 +1,6 @@
 // ATT&CK: T1486 - Data Encrypted for Impact
-// Description: files encrypted by the Black Basta ransomware result in the .basta extension being appended to the original file
+// Description: files encrypted by the Black Basta ransomware result in the .basta (V1) or a generated 9-character (V2) extension being appended to the original file
 DeviceFileEvents
 | where ActionType == "FileRenamed"
 | where PreviousFileName has_any ('.lnk', '.rtf', '.pst', '.docx', '.xlsx', '.jpg', '.jpeg', '.png', '.pdf')
-| where FileName endswith ".basta"
+| where FileName endswith ".basta" or FileName matches regex ".*.[0-9a-zA-Z]{9}$"
