@@ -1,0 +1,11 @@
+// ATT&CK: T1018: Remote System Discovery
+// Description: this query identifies file and process creation events for reconnaissance tools used by Quantum. Quantum will typically drop these tools in C:\Windows\Temp
+DeviceProcessEvents
+| where ActionType == "ProcessCreated"
+| where FileName == "AdFind.exe" or FileName == "AdFind.bat" or FileName == "7.exe"
+| where FolderPath contains "C:\\Windows\\Temp"
+| union (
+    DeviceFileEvents
+    | where FileName in~ ("Adfind.exe", "7.exe")
+    | where FolderPath contains "C:\\Windows\\Temp"
+)

@@ -1,0 +1,7 @@
+// ATT&CK: T1204.002 - User Execution: Malicious File
+// Description: checks for ISO files that have been mounted; requires the Microsoft-Windows-VHDMP-Operational event log channel
+// AMA DCR XPath query: Microsoft-Windows-VHDMP-Operational!*[System[(Level=1 or Level=2 or Level=3 or Level=4 or Level=0)]]
+Event
+| where EventLog == "Microsoft-Windows-VHDMP-Operational"
+| where EventID == 12
+| extend ISOFile = extract('<Data Name="VhdFile">(.*?)</Data>', 1, EventData)

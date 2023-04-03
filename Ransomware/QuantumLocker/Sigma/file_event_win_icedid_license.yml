@@ -1,0 +1,26 @@
+title: IcedID License File
+id: 656ab24c-3841-41a4-9fab-3a248578937a
+status: experimental
+description: Detects creation of the license file typically associated with IcedID
+references:
+    - https://www.cybereason.com/blog/cybereason-vs.-quantum-locker-ransomware
+author: Aaron Hoffmann
+date: 2023/03/30
+modified: 2023/03/30
+tags:
+    - attack.impact
+    - attack.t1486
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection1:
+        - TargetFilename: 'License.dat'
+    selection2:
+        - FolderPath|contains:
+            - 'AppDatata'
+            - 'ProgramData'
+    condition: selection1 AND selection2
+falsepositives:
+     - Unlikely
+level: medium

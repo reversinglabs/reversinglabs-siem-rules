@@ -1,0 +1,5 @@
+// T1204: User Execution
+// Description: this query identifies file creation events for the IcedID licnese.dat file, which is typically created in the %appdata% or ProgramData folders
+DeviceFileEvents
+| where FileName contains "license.dat"
+| where FolderPath contains "AppDatata" or FolderPath contains "ProgramData"

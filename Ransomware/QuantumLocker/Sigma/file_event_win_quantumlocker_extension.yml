@@ -1,0 +1,33 @@
+title: QuantumLocker file extension
+id: c962c914-d7cf-4343-a4d8-b9abf7baf0cd
+status: experimental
+description: Detects files that have been renamed with the .quantum extension.
+references:
+    - https://www.cybereason.com/blog/cybereason-vs.-quantum-locker-ransomware
+author: Aaron Hoffmann
+date: 2023/03/30
+modified: 2023/03/30
+tags:
+    - attack.impact
+    - attack.t1486
+logsource:
+    category: file_rename
+    product: windows
+detection:
+    selection:
+        OriginalFilename|endswith:
+            - '.lnk'
+            - '.rtf'
+            - '.pst'
+            - '.docx'
+            - '.xlsx'
+            - '.jpg'
+            - '.jpeg'
+            - '.png'
+            - '.pdf'
+        TargetFilename|endswith:
+            - '.quantum'
+    condition: selection
+falsepositives:
+     - Unlikely
+level: medium
