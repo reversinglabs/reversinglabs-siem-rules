@@ -1,0 +1,26 @@
+title: QuantumLocker Reconnaissance Tools
+id: 6d7c628f-fd2a-47a6-b704-f59c190c5785
+status: experimental
+description: Detects creation of reconnaissance tools typically used by QuantumLocker operators.
+references:
+    - https://www.cybereason.com/blog/cybereason-vs.-quantum-locker-ransomware
+author: Aaron Hoffmann
+date: 2023/03/30
+modified: 2023/03/30
+tags:
+    - attack.discovery
+    - attack.t1018
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection1:
+        - TargetFilename: 'AdFind.exe'
+        - TargetFilename: '7.exe'
+    selection2:
+        - FolderPath|contains:
+            - 'C:\Windows\Temp'
+    condition: selection1 AND selection2
+falsepositives:
+     - Unlikely
+level: medium

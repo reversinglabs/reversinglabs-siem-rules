@@ -1,0 +1,23 @@
+title: ISO file mounted (VHDMP)
+id: 8936fc60-4de5-47d1-a9b6-3f6f46533b47
+status: experimental
+description: Detects when an ISO is mounted via the VHDMP event channel
+references:
+    - https://www.cybereason.com/blog/cybereason-vs.-quantum-locker-ransomware
+author: Aaron Hoffmann
+date: 2023/03/30
+modified: 2023/03/30
+tags:
+    - attack.impact
+    - attack.t1486
+logsource:
+    service: application
+    product: windows
+detection:
+    selection:
+        Provider_Name: 'VHDMP'
+        EventID: 12
+    condition: selection
+falsepositives:
+     - Legitimate software installation
+level: medium

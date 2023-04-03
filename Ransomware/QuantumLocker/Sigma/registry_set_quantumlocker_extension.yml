@@ -1,0 +1,23 @@
+title: Set QuantumLocker file extension registry key
+id: eb00c536-6416-4237-9dbe-f25c21c8ba36
+status: experimental
+description: Detects adding the registry key made by QuantumLocker that associates the .quantum file extension
+references:
+    - https://www.cybereason.com/blog/cybereason-vs.-quantum-locker-ransomware
+author: Aaron Hoffmann
+date: 2023/03/30
+modified: 2023/03/30
+tags:
+    - attack.execution
+    - attack.t1112
+logsource:
+    category: registry_add
+    product: windows
+detection:
+    selection:
+        EventType: CreateKey
+        TargetObject|contains: '\SOFTWARE\Classes\.quantum'
+    condition: selection
+falsepositives:
+     - Unknown
+level: high

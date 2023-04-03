@@ -1,0 +1,24 @@
+title: QuantumLocker reconnaissance tool processes
+id: edd59977-7cac-4b5b-abd0-ac96031d23eb
+status: experimental
+description: Detects the use of AdFind and 7zip executables from Temp folders. QuantumLocker is known to use these tools during reconnaissance.
+references:
+    - https://www.cybereason.com/blog/cybereason-vs.-quantum-locker-ransomware
+author: Aaron Hoffmann
+date: 2023/03/30
+modified: 2023/03/30
+tags:
+    - attack.discovery
+    - attack.t1018
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|endswith: '\Temp\AdFind.exe'
+    selection2:
+        Image|endswith: '\Temp\7.exe'
+    condition: 1 of selection*
+falsepositives:
+     - Legitimate administrative activities
+level: low

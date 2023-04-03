@@ -1,0 +1,5 @@
+// ATT&CK: T1569.002 System Services: Service Execution
+// Description: this query identifies any file creation events relating to PsExec
+DeviceFileEvents
+| where ActionType == "FileCreated"
+| where FileName contains "PsExec"
