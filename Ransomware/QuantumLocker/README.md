@@ -1,0 +1,7 @@
+# QuantumLocker
+
+QuantumLocker, once a popular ransomware gang, is no longer an active threat. In a time where new cybersecurity threats continue to arise, security teams need to balance their adjustment of detecting these threats with older, more familiar ones. A threat all-too familiar to these teams is malicious actors' use of malware, specifically ransomware, to target victims globally. Despite ransomware gangs’ typically short life-spans, new groups continue to rise that grow out of previous gangs’ falls, demonstrating a persistent threat. 
+
+For instance, the Conti ransomware gang disappeared from the threat landscape after being active for less than two years. However, the malicious actors behind this operation didn’t just go away. They regrouped themselves, forming new alliances with other skilled threat actors to create “new” ransomware gangs. And in the process of regrouping, threat actors looked to the tools used by their previous gang to build the newer gang’s arsenal. This results in ransomware source code and point of entry tools being slightly modified or copied for a new gang’s activities.  
+
+This is exactly what happened after Conti’s demise: new offshoots of the fallen group formed, such as QuantumLocker, which had an active and successful campaign for over two years. In following the constant cycle that is the rising, falling, and rebranding of ransomware gangs, it’s inevitable that new offshoots of QuantumLocker are forming. Most concerning is that these new gangs will also reuse and modify the attack methods of their predecessor. 
