@@ -6,13 +6,12 @@ rule AntiDebugging_StringCopyAccessViolation_2 : M_B0002 A_T1622
         author = "Malware Utkonos"
         organization = "ReversingLabs"
         date = "2023-03-28"
-        description = "Detects an anti-debugging method which uses lstrcpyA to write a junk string to a read-only section raising an access violation"
+        description = "Detects an anti-debugging technique which uses lstrcpyA to write a junk string to a read-only section raising an access violation"
         exemplar = "2fd8356abd42b19799aca857990a5f49631b02bd3253f80d96b5d27dcfd2f7c9"
         location = "0x140004235"
         api_documentation = "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-lstrcpya"
         mitre_att = "T1622"
         mitre_mbc = "B0002"
-        minimum_yara = "4.3.0"
     strings:
         $op = {
             488d15[4]    // lea   rdx, [rel junk_source]  {"ScfRhqZ"}
@@ -20,7 +19,8 @@ rule AntiDebugging_StringCopyAccessViolation_2 : M_B0002 A_T1622
             ff15         // call  qword [rel lstrcpyA]
         }
     condition:
-        for any i in (1..#op) : (
+        for 2 i in (1..#op) : (
+            pe.sections[pe.section_index(@op[i])].characteristics  & pe.SECTION_MEM_EXECUTE and
             not pe.sections[pe.section_index(pe.rva_to_offset(@op[i] + 14 - pe.sections[pe.section_index(@op[i])].raw_data_offset + pe.sections[pe.section_index(@op[i])].virtual_address + uint32(@op[i] + 10)))].characteristics & pe.SECTION_MEM_WRITE and
             for any imp in pe.import_details : (
                 for any fun in imp.functions : (
