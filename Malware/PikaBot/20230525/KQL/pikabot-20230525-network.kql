@@ -1,0 +1,5 @@
+// description: PikaBot network indicators seen for week of 2023-05-25
+let IPAddresses = externaldata(IPAddress: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/PikaBot/20230525/KQL/pikabot-20230525-c2ips.txt"];
+let URLs = externaldata(URL: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/PikaBot/20230525/KQL/pikabot-20230525-urls.txt"];
+CommonSecurityLog
+| where DestinationIP in (IPAddresses) or RequestURL in (URLs)
