@@ -1,10 +1,12 @@
 # reversinglabs-siem-rules
 
-This repository contains SIEM rules to aide in detecting the tactics, techniques, and procedures (TTPs) used by various threat actors.
+This repository contains SIEM rules to aid in detecting the tactics, techniques, and procedures (TTPs) used by various threat actors.
 
 ## Categories
 
-- [Ransomware](./Ransomware/)
+### [Ransomware](./Ransomware/)
+
+### [Malware](./Malware/)
 
 ## Contents
 Each group will have the following subdirectories containing detection rules and other useful resources:
