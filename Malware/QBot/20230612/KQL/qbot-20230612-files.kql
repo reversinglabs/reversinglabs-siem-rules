@@ -1,0 +1,14 @@
+// detect 20230612 QBot file hash IOCs in CEF and MDE logs
+let QBotHashes = externaldata(QBotHash:string)
+[
+    @"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/QBot/20230612/KQL/qbot-20230612-hashes.txt"
+];
+(union isfuzzy=true
+(CommonSecurityLog
+| where isnotempty(FileHash)
+| join kind=inner QBotHashes on $left.FileHash == $right.QBotHash
+| extend timestamp = TimeGenerated, HostCustomEntity = SourceHostName),
+(DeviceFileEvents
+| where isnotempty(SHA256)
+| join kind=inner QBotHashes on $left.SHA256 == $right.QBotHash
+| extend timestamp = TimeGenerated, HostCustomEntity = DeviceName))

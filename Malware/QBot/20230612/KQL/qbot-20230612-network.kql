@@ -1,0 +1,5 @@
+// description: Qbot network indicators seen for week of 2023-06-12
+let IPAddresses = externaldata(IPAddress: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/QBot/20230612/KQL/qbot-20230612-c2ips.txt"];
+let URLs = externaldata(URL: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/QBot/20230612/KQL/qbot-20230612-urls.txt"];
+CommonSecurityLog
+| where DestinationIP in (IPAddresses) or RequestURL in (URLs)
