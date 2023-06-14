@@ -2,6 +2,8 @@
 
 This repository contains SIEM rules to aid in detecting the tactics, techniques, and procedures (TTPs) used by various threat actors.
 
+> *Want to stay in the loop? Subscribe to be notified for new Microsoft Sentinel content from ReversingLabs: https://www.reversinglabs.com/threat-intel-weekly-newsletter-sign-up*
+
 ## Categories
 
 ### [Ransomware](./Ransomware/)
