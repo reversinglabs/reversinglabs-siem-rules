@@ -1,0 +1,8 @@
+// description: IcedID process execution seen for week of 2023-06-20
+SecurityEvent
+| where EventID == 4688
+| where Process == "rundll32.exe" and CommandLine matches regex @"C:\\Users\\.*\\AppData\\Roaming\\Microsoft\\Windows\\Templates\.(dat|dll).*"
+| union 
+(DeviceProcessEvents
+| where FileName == "rundll32.exe" and ProcessCommandLine matches regex @"C:\\Users\\.*\\AppData\\Roaming\\Microsoft\\Windows\\Templates\.(dat|dll).*"
+)
