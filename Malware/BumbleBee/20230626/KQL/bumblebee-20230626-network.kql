@@ -1,0 +1,5 @@
+// description: BumbleBee network indicators seen for week of 2023-06-26
+let c2ips = externaldata(ip: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/BumbleBee/20230626/KQL/bumblebee-20230626-c2ips.txt"];
+let URLs = externaldata(URL: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/BumbleBee/20230626/KQL/bumblebee-20230626-urls.txt"];
+CommonSecurityLog
+| where DestinationIP in (c2ips) or RequestURL in (URLs)

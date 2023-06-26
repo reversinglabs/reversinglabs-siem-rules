@@ -1,0 +1,21 @@
+// detect 20230626 BumbleBee file IOCs in CEF, MDE, and Sysmon logs
+let BumbleBeeHashes = externaldata(BumbleBeeHash:string)
+[
+    @"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/BumbleBee/20230626/KQL/bumblebee-20230626-hashes.txt"
+];
+(union isfuzzy=true
+(CommonSecurityLog
+| where isnotempty(FileHash)
+| join kind=inner BumbleBeeHashes on $left.FileHash == $right.BumbleBeeHash
+| extend timestamp = TimeGenerated, HostCustomEntity = SourceHostName),
+(DeviceFileEvents
+| where isnotempty(SHA256)
+| join kind=inner BumbleBeeHashes on $left.SHA256 == $right.BumbleBeeHash
+| extend timestamp = TimeGenerated, HostCustomEntity = DeviceName),
+(DeviceFileEvents
+| where ActionType == "FileCreated"
+| where FolderPath matches regex @"C:\\Users\\.*\\AppData\\Roaming\\Microsoft\\Templates\\[0-9]{6}\.dat"
+| extend timestamp = TimeGenerated, HostCustomEntity = DeviceName),
+(SysmonParser
+| where EventID == 11
+| where TargetFilename matches regex @"C:\\Users\\.*\\AppData\\Roaming\\Microsoft\\Templates\\[0-9]{6}\.dat"))

@@ -1,0 +1,14 @@
+// looks for new processes for known remote access software
+// see associated watchlist here: https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/BumbleBee/20230626/KQL/RemoveAccessSoftware.txt
+let RemoteAccessSoftware = _GetWatchlist('RemoteAccessSoftware') | project remote_utility;
+SecurityEvent
+| where EventID == 4688
+| where AccountType == "User"
+| where NewProcessName has_any (RemoteAccessSoftware)
+| extend ProcessId = tolong(ProcessId)
+| project TimeGenerated, Account=SubjectUserName, AccountDomain=SubjectDomainName, Computer, NewProcessName, ParentProcessName, Process, ProcessId, Type
+| union 
+(DeviceProcessEvents
+| where ActionType == "ProcessCreated"
+| where FileName has_any (RemoteAccessSoftware)
+| project TimeGenerated, Account=AccountName, AccountDomain, Computer=DeviceName, Process=FileName, NewProcessName=FolderPath, ProcessCommandLine, ParentProcessName=InitiatingProcessFolderPath, ProcessId, Type)
