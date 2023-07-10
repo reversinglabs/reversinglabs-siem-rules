@@ -1,0 +1,19 @@
+// MITRE ATT&CK: T1652
+SecurityEvent
+| where EventID == 4688 
+| where (
+    (NewProcessName endswith "driverquery.exe" or NewProcessName =~ "drvqry.exe") 
+    and ((ParentProcessName endswith "\\cmd.exe" or ParentProcessName endswith "\\powershell.exe" or ParentProcessName endswith "\\pwsh.exe" or ParentProcessName endswith "\\wscript.exe" or ParentProcessName endswith "\\cscript.exe" or ParentProcessName endswith "\\mshta.exe") 
+    or (ParentProcessName contains "\\AppData\\Local\\" or ParentProcessName contains "\\Users\\Public\\" or ParentProcessName contains "\\Windows\\Temp\\"))
+)
+| union 
+(DeviceProcessEvents
+| where ActionType == "ProcessCreated"
+| where (
+    (FileName endswith "driverquery.exe" or FileName =~ "drvqry.exe") 
+    and ((InitiatingProcessFileName endswith "\\cmd.exe" or InitiatingProcessFileName endswith "\\powershell.exe" or InitiatingProcessFileName endswith "\\pwsh.exe" or InitiatingProcessFileName endswith "\\wscript.exe" or InitiatingProcessFileName endswith "\\cscript.exe" or InitiatingProcessFileName endswith "\\mshta.exe") 
+    or (InitiatingProcessFileName contains "\\AppData\\Local\\" or InitiatingProcessFileName contains "\\Users\\Public\\" or InitiatingProcessFileName contains "\\Windows\\Temp\\"))
+)),
+(SysmonParser
+| where EventID == 1)
+| where (NewProcessName endswith "driverquery.exe" or NewProcessName =~ "drvqry.exe") and ((ParentProcessName endswith "\\cmd.exe" or ParentProcessName endswith "\\powershell.exe" or ParentProcessName endswith "\\pwsh.exe" or ParentProcessName endswith "\\wscript.exe" or ParentProcessName endswith "\\cscript.exe" or ParentProcessName endswith "\\mshta.exe") or (ParentProcessName contains "\\AppData\\Local\\" or ParentProcessName contains "\\Users\\Public\\" or ParentProcessName contains "\\Windows\\Temp\\"))

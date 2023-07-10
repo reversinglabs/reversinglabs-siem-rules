@@ -1,0 +1,6 @@
+// description: Gozi/Ursnif network indicators seen for week of 2023-07-10
+let c2ips = externaldata(ip: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/Gozi/20230710/KQL/gozi-20230710-c2ips.txt"];
+let URLs = externaldata(URL: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/Gozi/20230710/KQL/gozi-20230710-urls.txt"];
+let c2domains = externaldata(domain: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/Gozi/20230710/KQL/gozi-20230710-c2domains.txt"];
+CommonSecurityLog
+| where DestinationIP in (c2ips) or RequestURL in (URLs) or DestinationHostName in (c2domains)

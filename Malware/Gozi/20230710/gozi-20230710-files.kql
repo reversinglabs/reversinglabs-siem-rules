@@ -1,0 +1,21 @@
+// detect 20230626 BumbleBee file IOCs in CEF, MDE, and Sysmon logs
+let GoziHashes = externaldata(GoziHash:string)
+[
+    @"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/Gozi/20230710/KQL/gozi-20230710-hashes.txt"
+];
+(union isfuzzy=true
+(CommonSecurityLog
+| where isnotempty(FileHash)
+| join kind=inner GoziHashes on $left.FileHash == $right.GoziHash
+| extend timestamp = TimeGenerated, HostCustomEntity = SourceHostName),
+(DeviceFileEvents
+| where isnotempty(SHA256)
+| join kind=inner GoziHashes on $left.SHA256 == $right.GoziHash
+| extend timestamp = TimeGenerated, HostCustomEntity = DeviceName),
+(DeviceFileEvents
+| where ActionType == "FileCreated"
+| where FolderPath matches regex @"C:\\Users\\.*\\subordinati.js"
+| extend timestamp = TimeGenerated, HostCustomEntity = DeviceName),
+(SysmonParser
+| where EventID == 11
+| where TargetFilename matches regex @"C:\\Users\\.*\\subordinati.js"))
