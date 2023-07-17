@@ -1,0 +1,15 @@
+// description: njRAT network indicators for 20230717
+CommonSecurityLog
+| where DestinationHostName has_any ('.duckdns.org','.ngrok.io', '.ddns.net', '.ply.gg', '.linkpc.net') 
+and DestinationPort in (1515, 5552, 6666, 16261, 16694, 25565, 54892)
+| union (
+SysmonParser
+| where EventID == 3 
+| where ipv4_is_private(DestinationIp) == false
+| where DestinationPort in (1515, 5552, 6666, 16261, 16694, 25565, 54892)
+| join (SysmonParser 
+    | where EventID == 22 
+    | where QueryName has_any ('.duckdns.org','.ngrok.io', '.ddns.net', '.ply.gg', '.linkpc.net') 
+    | extend IpResult = extract(@'([\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3})', 1, QueryResults)
+) on $left.DestinationIp == $right.IpResult
+)
