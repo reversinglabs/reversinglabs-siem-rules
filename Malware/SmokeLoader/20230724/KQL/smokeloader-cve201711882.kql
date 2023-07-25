@@ -1,0 +1,13 @@
+// description: smoke loader has been seen exploiting cve-2017-11882
+DeviceProcessEvents
+| where InitiatingProcessFolderPath contains "EQNEDT32.EXE"
+| where ProcessCommandLine matches regex @"(?i)C:\\Users\\.*\\AppData\\Local\\Temp\\.*.exe"
+| union 
+(SysmonParser
+| where EventID == 1
+| where ParentImage contains "EQNEDT32.EXE"
+| where CommandLine matches regex @"(?i)C:\\Users\\.*\\AppData\\Local\\Temp\\.*.exe"),
+(SecurityEvent
+| where EventID == 4688
+| where ParentProcessName contains "EQNEDT32.EXE"
+| where CommandLine matches regex @"(?i)C:\\Users\\.*\\AppData\\Local\\Temp\\.*.exe")

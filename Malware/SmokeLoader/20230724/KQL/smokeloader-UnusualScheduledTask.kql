@@ -1,0 +1,21 @@
+// description: identifies new scheduled tasks created in an unusual location
+let SmokeLoaderRegex = @"(?i)C:\\Users\\.*\\AppData\\Local\\(Temp|[0-9a-z-]{1,})\\.*\.exe";
+DeviceProcessEvents
+| where FileName == "schtasks.exe"
+| where InitiatingProcessFolderPath matches regex SmokeLoaderRegex
+| where ProcessCommandLine contains "/Create /SC"
+| extend TaskRun = tolower(extract(@'/TR "(.*?)" /F', 1, ProcessCommandLine))
+| where TaskRun == InitiatingProcessFolderPath
+| union 
+(SysmonParser
+| where EventID == 1
+| where CommandLine contains "schtasks.exe"
+| where ParentImage matches regex SmokeLoaderRegex
+| extend TaskRun = extract(@'/TR "(.*?)" /F', 1, CommandLine)
+| where TaskRun == ParentImage),
+(SecurityEvent
+| where EventID == 4688
+| where Process == "schtasks.exe"
+| where ParentProcessName matches regex SmokeLoaderRegex
+| extend TaskRun = extract(@'/TR "(.*?)" /F', 1, CommandLine)
+| where TaskRun == ParentProcessName)

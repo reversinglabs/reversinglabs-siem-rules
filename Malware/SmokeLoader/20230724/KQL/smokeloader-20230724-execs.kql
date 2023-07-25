@@ -1,0 +1,11 @@
+// description: 20230724 - Smoke Loader new processes. 
+let SmokeLoaderRegex = @"(?i)C:\\Users\\.*\\AppData\\Local\\(Temp|[0-9a-z-]{1,})\\.*\.exe";
+SysmonParser
+| where EventID == 1
+| where Image matches regex SmokeLoaderRegex
+| union 
+(DeviceProcessEvents
+| where FolderPath matches regex SmokeLoaderRegex),
+(SecurityEvent
+| where EventID == 4688
+| where ParentProcessName matches regex SmokeLoaderRegex)

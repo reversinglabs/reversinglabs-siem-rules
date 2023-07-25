@@ -1,0 +1,8 @@
+// description: Smoke Loader network indicators for 20230724
+let Domains = externaldata(Domain: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/SmokeLoader/20230724/KQL/smokeloader-20230724-c2domains.txt"];
+CommonSecurityLog
+| where DestinationHostName in (Domains)
+| union
+(SysmonParser 
+| where EventID == 22 
+| where QueryName in (Domains))

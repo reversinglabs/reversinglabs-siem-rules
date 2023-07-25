@@ -1,0 +1,9 @@
+// description: 20230724 - Smoke Loader file creation events
+let SmokeLoaderRegex = @"C:\\Users\\.*\\AppData\\Local\\(Temp|[0-9a-z\-]{1,})\\.*\.exe";
+DeviceFileEvents
+| where ActionType == "FileCreated"
+| where InitiatingProcessFolderPath matches regex SmokeLoaderRegex or FolderPath matches regex SmokeLoaderRegex
+| union 
+(SysmonParser
+| where EventID == 11
+| where TargetFilename matches regex SmokeLoaderRegex)
