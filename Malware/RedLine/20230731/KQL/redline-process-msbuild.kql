@@ -1,0 +1,13 @@
+// description: detects suspicious launches of msbuild.exe. RedLine stealer has been 
+// using this to check for cryptocurrency wallets on the target system
+let exclusions = @'.*\\(devenv.exe|msbuild.exe|python.exe|explorer.exe|nuget.exe)$';
+SysmonParser
+| where EventID == 1 
+| where ((Image endswith @'\MSBuild.exe' or OriginalFileName =~ @'MSBuild.exe') and not (ParentImage matches regex exclusions))
+| union 
+(SecurityEvent
+| where EventID == 4688
+| where ((NewProcessName endswith @'\MSBuild.exe') and not (ParentProcessName matches regex exclusions))),
+(DeviceProcessEvents
+| where ActionType == "ProcessCreated"
+| where ((FolderPath endswith @'\MSBuild.exe') and not (InitiatingProcessFolderPath matches regex exclusions)))

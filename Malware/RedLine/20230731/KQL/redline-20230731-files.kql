@@ -1,0 +1,14 @@
+// detect 20230731 RedLine file IOCs in CEF, MDE, and Sysmon logs
+let Hashes = externaldata(Hash:string)
+[
+    @"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/RedLine/20230731/KQL/redline-20230731-hashes.txt"
+];
+(union isfuzzy=true
+(CommonSecurityLog
+| where isnotempty(FileHash)
+| join kind=inner Hashes on $left.FileHash == $right.Hash
+| extend timestamp = TimeGenerated, HostCustomEntity = SourceHostName),
+(DeviceFileEvents
+| where isnotempty(SHA256)
+| join kind=inner Hashes on $left.SHA256 == $right.Hash
+| extend timestamp = TimeGenerated, HostCustomEntity = DeviceName))
