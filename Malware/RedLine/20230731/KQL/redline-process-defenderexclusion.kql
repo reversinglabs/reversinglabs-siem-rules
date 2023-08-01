@@ -1,0 +1,11 @@
+// description: RedLine has been seen adding exclusions to windows defender for evasion
+let DefenderExclusion = @'(?i)add\-mppreference \-ExclusionPath "C:\\users\\.*\\(AppData\\Roaming|Downloads)\\.*.exe"';
+SecurityEvent
+| where EventID == 4688
+| where CommandLine matches regex DefenderExclusion
+| union 
+(SysmonParser
+| where EventID == 1
+| where CommandLine matches regex DefenderExclusion),
+(DeviceProcessEvents
+| where ProcessCommandLine matches regex DefenderExclusion)
