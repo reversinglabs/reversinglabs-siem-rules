@@ -1,0 +1,4 @@
+// description: AgentTesla network indicators for 20230807
+let URLs = externaldata(Domain: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/AgentTesla/20230807/KQL/agenttesla-20230807-urls.txt"];
+CommonSecurityLog
+| where RequestURL in (URLs)

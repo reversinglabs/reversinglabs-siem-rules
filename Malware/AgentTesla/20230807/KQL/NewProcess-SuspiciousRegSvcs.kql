@@ -1,0 +1,16 @@
+// description: AgentTesla was recently seen using regsvcs.exe for execution
+// ref: https://github.com/SigmaHQ/sigma/blob/6312dd1d44d309608552105c334948f793e89f48/rules/windows/process_creation/proc_creation_win_lolbin_regasm.yml
+// ref: https://lolbas-project.github.io/lolbas/Binaries/Regsvcs/
+let susLocations = @"(?i)(\\Users\\Public\\|\\AppData\\Local\\Temp\\|\\AppData\\Local\\Temp\\|\\Desktop\\|\\Downloads\\|\\PerfLogs\\|\\Windows\\Temp\\|\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\)";
+SecurityEvent
+| where EventID == 4688
+| where Process contains "regsvcs.exe"
+| where ParentProcessName matches regex (susLocations)
+| union
+(SysmonParser
+| where OriginalFileName contains "regsvcs.exe"
+| where ParentImage matches regex (susLocations)),
+(DeviceProcessEvents
+| where ActionType == "ProcessCreated"
+| where FileName contains "regsvcs.exe"
+| where InitiatingProcessFolderPath matches regex (susLocations))

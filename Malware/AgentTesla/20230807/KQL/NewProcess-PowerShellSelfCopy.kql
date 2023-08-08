@@ -1,0 +1,20 @@
+// description: AgentTesla was recently seen using powershell to copy itself to the Startup folder for persistence
+SecurityEvent
+| where EventID == 4688
+| where Process == "powershell.exe" 
+| where CommandLine contains "-ExecutionPolicy Bypass -command Copy-Item" and CommandLine matches regex @"(?i)C:\\users\\.*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup.*"
+| extend SourceFile = extract(@"-ExecutionPolicy Bypass -command Copy-Item '(.*?)' ", 1, CommandLine)
+| where SourceFile == ParentProcessName
+| union 
+(DeviceProcessEvents
+| where ActionType == "ProcessCreated"
+| where FileName contains "powershell.exe"
+| where ProcessCommandLine contains "-ExecutionPolicy Bypass -command Copy-Item" and ProcessCommandLine matches regex @"(?i)C:\\users\\.*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup.*"
+| extend SourceFile = extract(@"-ExecutionPolicy Bypass -command Copy-Item '(.*?)' ", 1, ProcessCommandLine)
+| where tolower(SourceFile) == InitiatingProcessFolderPath),
+(SysmonParser
+| where EventID == 1
+| where OriginalFileName contains "powershell.exe"
+| where CommandLine contains "-ExecutionPolicy Bypass -command Copy-Item" and CommandLine matches regex @"(?i)C:\\users\\.*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup.*"
+| extend SourceFile = extract(@"-ExecutionPolicy Bypass -command Copy-Item '(.*?)' ", 1, CommandLine)
+| where SourceFile == ParentImage)

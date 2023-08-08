@@ -1,0 +1,9 @@
+// description: identifies outbound network connections made by regsvcs.exe
+// ref: https://lolbas-project.github.io/lolbas/Binaries/Regsvcs/
+SysmonParser
+| where EventID == 22
+| where Image contains "regsvcs.exe"
+| union 
+(DeviceNetworkEvents
+| where ActionType == "ConnectionSuccess"
+| where InitiatingProcessFileName contains "regsvcs.exe")
