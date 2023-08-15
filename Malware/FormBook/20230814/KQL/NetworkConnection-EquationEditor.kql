@@ -1,0 +1,9 @@
+// description: FormBook will exploit cve-2017-11882, a vulnerability in MS 
+// Office's equation editor, to make external network connections
+DeviceNetworkEvents
+| where ActionType == "ConnectionSuccess"
+| where InitiatingProcessFolderPath contains "EQNEDT32.EXE"
+| union 
+(SysmonParser
+| where EventID == 3
+| where Image contains "EQNEDT32.EXE")

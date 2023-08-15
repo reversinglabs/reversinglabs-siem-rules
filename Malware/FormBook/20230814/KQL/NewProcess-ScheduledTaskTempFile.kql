@@ -1,0 +1,20 @@
+// dsecription: FormBook may create a scheduled task that launches 
+// a file in a temp location
+let tempFileLocation = @"(?i)C:\\Users\\.*\\AppData\\Local\\Temp\\.*\.tmp\\.*";
+DeviceProcessEvents
+| where FileName == "schtasks.exe"
+| where ProcessCommandLine contains "/Create /TN"
+| extend TaskRun = tolower(extract(@'/XML "(.*?)"', 1, ProcessCommandLine))
+| where TaskRun == InitiatingProcessFolderPath
+| union 
+(SysmonParser
+| where EventID == 1
+| where CommandLine contains "schtasks.exe" and CommandLine contains "/Create /TN"
+| extend TaskRun = extract(@'/XML "(.*?)"', 1, CommandLine)
+| where TaskRun matches regex tempFileLocation),
+(SecurityEvent
+| where EventID == 4688
+| where Process == "schtasks.exe"
+| where CommandLine contains "/Create /TN"
+| extend TaskRun = extract(@'/XML "(.*?)"', 1, CommandLine)
+| where TaskRun matches regex tempFileLocation)

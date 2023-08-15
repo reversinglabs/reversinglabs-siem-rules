@@ -1,0 +1,11 @@
+// description: FormBook tends to exploit cve-2017-11882 to 
+// drop files in the users Temporary Internet Files
+let fileRegex = @"(?i)C:\\Users\\.*\\AppData\\Local\\Microsoft\\Windows\\Temporary Internet Files\\Content.IE5\\.*\\wininit[1].exe";
+DeviceFileEvents
+| where InitiatingProcessFolderPath contains "EQNEDT32.EXE"
+| where FolderPath matches regex fileRegex
+| union 
+(SysmonParser
+| where EventID == 11
+| where Image contains "EQNEDT32.EXE"
+| where TargetFilename matches regex fileRegex)

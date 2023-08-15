@@ -1,0 +1,7 @@
+// description: FormBook network indicators for 20230814
+let c2URLs = externaldata(Domain: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/FormBook/20230814/KQL/formbook-20230814-c2urls.txt"];
+let payloadURLs = externaldata(Domain: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/FormBook/20230814/KQL/formbook-20230814-payloadurls.txt"];
+CommonSecurityLog
+| where RequestURL in (c2URLs) or RequestURL in (payloadURLs)
+| union (DeviceNetworkEvents
+| where RemoteUrl in (c2URLs) or RemoteUrl in (payloadURLs))
