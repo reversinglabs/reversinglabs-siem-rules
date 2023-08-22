@@ -1,0 +1,14 @@
+// description: this query identifies new files created by LokiBot 
+// as a result of exploiting CVE-2017-11882 for recently seen samples
+let fileNames = dynamic(["ChromeSetup.exe","chrome.exe","Chromium.exe","loki.exe","smss.exe","dasHost.exe","kellyzx.exe","kellyzx.doc"]);
+DeviceFileEvents
+| where ActionType contains "FileCreated"
+| where InitiatingProcessFileName contains "EQNEDT32.EXE"
+| where FileName in~ (fileNames)
+| union 
+(SysmonParser
+| where EventID == 11
+| where Image contains "EQNEDT32.EXE"
+| extend fileDetails = parse_path(TargetFilename)
+| extend FileName = tostring(fileDetails.Filename)
+| where FileName in~ (fileNames))
