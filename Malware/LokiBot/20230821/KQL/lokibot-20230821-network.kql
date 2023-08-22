@@ -1,0 +1,11 @@
+// description: LokiBot network indicators for 20230821
+let c2URLs = external_data(Domain: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/LokiBot/20230821/KQL/lokibot-20230821-c2urls.txt"];
+let payloadURLs = external_data(Domain: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/LokiBot/20230821/KQL/lokibot-20230821-payloadurls.txt"];
+CommonSecurityLog
+| where RequestURL in (c2URLs) or RequestURL in (payloadURLs)
+| union 
+(DeviceNetworkEvents
+| where RemoteUrl in (c2URLs) or RemoteUrl in (payloadURLs)),
+(SysmonParser
+| where EventID == 22
+| where QueryName in (c2URLs))

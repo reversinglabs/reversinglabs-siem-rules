@@ -1,0 +1,14 @@
+// detect 20230821 LokiBot file hash IOCs
+let Hashes = externaldata(Hash:string)
+[
+    @"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/LokiBot/20230821/KQL/lokibot-20230821-hashes.txt"
+];
+(union isfuzzy=true
+(CommonSecurityLog
+| where isnotempty(FileHash)
+| join kind=inner Hashes on $left.FileHash == $right.Hash
+| extend timestamp = TimeGenerated, HostCustomEntity = SourceHostName),
+(DeviceFileEvents
+| where isnotempty(SHA1)
+| join kind=inner Hashes on $left.SHA1 == $right.Hash
+| extend timestamp = TimeGenerated, HostCustomEntity = DeviceName))
