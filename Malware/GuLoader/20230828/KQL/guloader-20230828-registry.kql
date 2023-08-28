@@ -1,0 +1,10 @@
+// this query detects new registry keys created by recent GuLoader samples
+let guLoaderKey = @"\Software\asa";
+SysmonParser
+| where (EventID == 12 and TargetObject contains strcat(@"HKCU", guLoaderKey))
+or (EventID == 13 and TargetObject contains strcat(@"HKCU", guLoaderKey, @"\CCar") and Details == "Assi")
+| union (
+DeviceRegistryEvents
+| where (ActionType == "RegistryKeyCreated" and RegistryKey contains strcat(@"HKEY_CURRENT_USER", guLoaderKey))
+ or (ActionType == "RegistryValueSet" and RegistryKey contains guLoaderKey and RegistryValueName == "CCar" and RegistryValueData == "Assi")
+)

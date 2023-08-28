@@ -1,0 +1,10 @@
+// description: GuLoader network indicators for 20230828
+let payloadURLs = external_data(Domain: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/GuLoader/20230828/KQL/guloader-20230828-payloadurls.txt"];
+CommonSecurityLog
+| where RequestURL in (payloadURLs)
+| union 
+(DeviceNetworkEvents
+| where RemoteUrl in (payloadURLs)),
+(SysmonParser
+| where EventID == 22
+| where QueryName in (payloadURLs))

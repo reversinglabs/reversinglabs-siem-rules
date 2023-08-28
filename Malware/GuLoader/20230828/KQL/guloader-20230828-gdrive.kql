@@ -1,0 +1,6 @@
+// this query detects dns query events for Google Drive
+// from a binary found in a users Downloads folder
+SysmonParser
+| where EventID == 22
+| where Image matches regex @"(?i)(C:\\Users\\.*\\Downloads\\.*.exe)"
+| where QueryName contains "drive.google.com" or QueryName contains "googleusercontent.com"
