@@ -1,0 +1,11 @@
+// this query identifies a potential registry key created by recent nanocore samples
+let KeyPath = @"\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run";
+let DataValue = @"C:\Program Files (x86)\DHCP Monitor\dhcpmon.exe";
+SysmonParser
+| where (EventID == 12 and TargetObject contains strcat(@"HKLM", KeyPath))
+or (EventID == 13 and TargetObject contains strcat(@"HKLM", KeyPath, @"\DHCP Monitor") and Details == DataValue)
+| union (
+DeviceRegistryEvents
+| where (ActionType == "RegistryKeyCreated" and RegistryKey contains strcat(@"HKEY_LOCAL_MACHINE", KeyPath))
+ or (ActionType == "RegistryValueSet" and RegistryKey contains KeyPath and RegistryValueName == "DHCP Monitor" and RegistryValueData == DataValue)
+)

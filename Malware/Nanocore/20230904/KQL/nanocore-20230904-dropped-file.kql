@@ -1,0 +1,11 @@
+// this query identifies potential malicious files dropped by recent nanocore samples
+let DroppedFile = @"C:\Program Files (x86)\DHCP Monitor\dhcpmon.exe";
+let DroppedFileLog = @"(?i)C:\\Users\\.*\\AppData\\Local\\Microsoft\\CLR_V4.0_32\\UsageLogs\\dhcpmon.exe.log";
+(union isfuzzy=true
+(DeviceFileEvents
+| where ActionType == "FileCreated"
+| where FolderPath == DroppedFile or FolderPath matches regex DroppedFileLog
+| extend timestamp = TimeGenerated, HostCustomEntity = DeviceName),
+(SysmonParser
+| where EventID == 11
+| where TargetFilename == DroppedFile or TargetFilename matches regex DroppedFileLog))

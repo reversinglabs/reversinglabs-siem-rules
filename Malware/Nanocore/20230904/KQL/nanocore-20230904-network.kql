@@ -1,0 +1,12 @@
+// description: Nanocore network indicators for 20230904
+let payloadURLs = external_data(Domain: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/Nanocore/20230904/KQL/nanocore-20230904-payloadurls.txt"];
+let c2ips = external_data(c2ip: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/Nanocore/20230904/KQL/nanocore-20230904-c2ips.txt"];
+let ddns = external_data(ddnsdomain: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/Nanocore/20230904/KQL/nanocore-20230904-ddns.txt"];
+CommonSecurityLog
+| where RequestURL in (payloadURLs) or RequestURL in (ddns) or DestinationHostName in (ddns) or DestinationIP in (c2ips)
+| union 
+(DeviceNetworkEvents
+| where RemoteUrl in (payloadURLs) or RemoteUrl in (ddns) or RemoteIP in (c2ips)),
+(SysmonParser
+| where EventID == 22
+| where QueryName in (payloadURLs) or QueryName in (ddns))
