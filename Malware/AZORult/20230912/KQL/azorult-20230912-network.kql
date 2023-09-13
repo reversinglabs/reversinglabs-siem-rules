@@ -1,0 +1,11 @@
+// description: AZORult network indicators for 20230912
+let payloadURLs = external_data(payloadURL: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/AZORult/20230912/KQL/azorult-20230912-payloadurls.txt"];
+let c2urls = external_data(c2url: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/AZORult/20230912/KQL/azorult-20230912-c2urls.txt"];
+CommonSecurityLog
+| where RequestURL in (payloadURLs) or RequestURL in (c2urls)
+| union 
+(DeviceNetworkEvents
+| where RemoteUrl in (payloadURLs) or RemoteUrl in (c2urls)),
+(SysmonParser
+| where EventID == 22
+| where QueryName in (payloadURLs) or QueryName in (c2urls))
