@@ -1,0 +1,23 @@
+// this query identifies process execution events relating to the latest AveMaria samples
+let fileShareServices = dynamic(["filebin.net", "cdn.discordapp.com", "ipfs.io", "filetransfer.io", "transfer.sh"]);
+let pwshMSHTA = "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" . $env:C:\\W*\\S*2\\m*h?a.*";
+let schtasksRegex = @'schtasks  /create /f /sc onlogon /rl highest /tn \"ChromeUpdater\" /tr .*C:\\Users\\.*\\AppData\\Roaming\\ChromeUpdater.exe.*';
+SecurityEvent
+| where EventID == 4688
+| where (CommandLine contains "Add-MpPreference -ExclusionPath C:\\")
+    or (CommandLine matches regex @'\"C:\\Windows\\System32\\mshta.exe\"' and CommandLine has_any (fileShareServices))
+    or (CommandLine contains pwshMSHTA)
+    or (CommandLine matches regex schtasksRegex)
+| union 
+(SysmonParser
+| where EventID == 1 and ((CommandLine contains "Add-MpPreference -ExclusionPath")
+    or (CommandLine matches regex @'\"C:\\Windows\\System32\\mshta.exe\".*' and CommandLine has_any (fileShareServices))
+    or (CommandLine contains pwshMSHTA)
+    or (CommandLine matches regex schtasksRegex)
+    or (ParentImage == "C:\\Windows\\System32\\svchost.exe" and CommandLine contains "AppData\\Roaming")
+    or (ParentImage contains "AppData\\Roaming" and OriginalFileName == "MSBuild.exe"))
+),
+(SysmonParser
+| where EventID == 22
+| where Image == "C:\\Windows\\System32\\mshta.exe"
+| where QueryName in (fileShareServices))

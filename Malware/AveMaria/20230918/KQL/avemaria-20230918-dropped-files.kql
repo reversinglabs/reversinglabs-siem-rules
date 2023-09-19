@@ -1,0 +1,9 @@
+// this query detects creation of files seen in recent avemaria samples
+SysmonParser
+| where EventID == 11
+| where Image endswith "powershell.exe" and TargetFilename matches regex @"\\AppData\\Roaming\\.*.exe"
+| union
+(DeviceFileEvents
+| where ActionType == "FileCreated"
+| where InitiatingProcessFileName == "powershell.exe"
+| where InitiatingProcessParentFileName == "mshta.exe")

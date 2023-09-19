@@ -1,0 +1,11 @@
+// this query identifies a potential registry key created by recent avemaria samples
+let KeyPath = @"(?i)\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
+let DataValue = @"(?i)C:\\users\\.*\\AppData\\Local\\Chrome\\StikyNot.exe";
+SysmonParser
+| where (EventID == 12 and TargetObject contains strcat(@"HKCU", KeyPath))
+or (EventID == 13 and TargetObject contains strcat(@"HKCU", KeyPath, @"\Microsoft OneDrive") and Details matches regex DataValue)
+| union (
+DeviceRegistryEvents
+| where (ActionType == "RegistryKeyCreated" and RegistryKey contains strcat(@"HKEY_CURRENT_USER", KeyPath))
+ or (ActionType == "RegistryValueSet" and RegistryKey contains KeyPath and RegistryValueName == "Microsoft OneDrive" and RegistryValueData matches regex DataValue)
+)
