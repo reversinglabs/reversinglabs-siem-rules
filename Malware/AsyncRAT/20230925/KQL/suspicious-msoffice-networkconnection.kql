@@ -1,0 +1,11 @@
+// this query detects network connections from MS office products to non-office domains
+let OfficeApps = dynamic(["winword.exe","excel.exe","powerpnt.exe","mspub.exe","visio.exe","wordpad.exe","wordview.exe","onenote.exe", "onenotem.exe","onenoteviewer.exe","onenoteim.exe", "msaccess.exe"]);
+let OfficeDomains = dynamic(["office.com", "office.net"]);
+SysmonParser
+| where EventID == 22
+| where Image has_any (OfficeApps)
+| where not (QueryName has_any (OfficeDomains))
+| union (DeviceNetworkEvents
+| where ActionType == "ConnectionSuccess"
+| where InitiatingProcessFileName has_any (OfficeApps)
+| where not (RemoteUrl has_any (OfficeDomains)))

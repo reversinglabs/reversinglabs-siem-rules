@@ -1,0 +1,12 @@
+// this query detects when onenote spawns a new mshta process
+SecurityEvent
+| where EventID == 4688 
+| where ParentProcessName has @"\onenote.exe"
+| where NewProcessName has @"\mshta.exe"
+| union (SysmonParser
+| where EventID == 1
+| where ParentImage has @"\onenote.exe"
+| where OriginalFileName == "mshta.exe"),
+(DeviceProcessEvents
+| where InitiatingProcessFileName == "onenote.exe"
+| where FileName == "mshta.exe")

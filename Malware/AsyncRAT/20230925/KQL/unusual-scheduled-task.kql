@@ -1,0 +1,14 @@
+// description: identifies new scheduled tasks created in an unusual location
+let AppDataRegex = @"(?i).*C:\\Users\\.*\\AppData\\Local\\Temp\\.*";
+DeviceProcessEvents
+| where FileName == "schtasks.exe"
+| where ProcessCommandLine matches regex AppDataRegex
+| union 
+(SysmonParser
+| where EventID == 1
+| where OriginalFileName == "schtasks.exe"
+| where CommandLine matches regex AppDataRegex),
+(SecurityEvent
+| where EventID == 4688
+| where Process == "schtasks.exe"
+| where CommandLine matches regex AppDataRegex)
