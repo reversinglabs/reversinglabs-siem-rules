@@ -1,0 +1,8 @@
+// this query detects registry changes made by Remcos
+let KeyPath = @"\SOFTWARE\Rmc-";
+SysmonParser
+| where (EventID == 12 and TargetObject contains"HKCU" and TargetObject contains KeyPath)
+| union (
+DeviceRegistryEvents
+| where (ActionType == "RegistryKeyCreated" and RegistryKey contains"HKEY_CURRENT_USER" and RegistryKey contains KeyPath)
+)

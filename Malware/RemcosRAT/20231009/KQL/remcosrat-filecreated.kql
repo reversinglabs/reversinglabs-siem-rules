@@ -1,0 +1,8 @@
+// this query identifies files created by RemcosRAT
+SysmonParser
+| where EventID == 11
+| where TargetFilename contains @"\ProgramData\remcos\logs.dat"
+| union
+(DeviceFileEvents
+| where ActionType == "FileCreated"
+| where FolderPath contains @"\ProgramData\remcos\logs.dat")
