@@ -1,0 +1,8 @@
+// this query detects potential new processes relating to NetSupport RAT
+SysmonParser
+| where EventID == 1
+| where Company == "NetSupport Ltd"
+| where Image contains "client32.exe"
+| union (
+DeviceProcessEvents 
+| where FileName contains "client32.exe" and ProcessVersionInfoCompanyName contains "NetSupport Ltd")
