@@ -1,0 +1,12 @@
+// this query detects potential new DarkGate malware processes
+SysmonParser
+| where EventID == 1
+| where (Image contains "Autoit3.exe" and ParentImage matches regex @"C:\\Users\\.*\\AppData\\Local\\Temp\\.*\\files\\windbg.exe")
+  or (CommandLine contains "expand.exe -R files.cab" and ParentImage contains "msiexec.exe" and CurrentDirectory matches regex @"C:\\Users\\.*\\AppData\\Local\\Temp\\.*")
+  or (CommandLine matches regex @".*mkdir c:\\[a-z]{4} .*")
+| union 
+(DeviceProcessEvents
+| where (FileName contains "Autoit3.exe" and InitiatingProcessFolderPath matches regex @"C:\\Users\\.*\\AppData\\Local\\Temp\\.*\\files\\windbg.exe")
+  or (ProcessCommandLine contains "expand.exe -R files.cab" and InitiatingProcessFolderPath contains "msiexec.exe" and FolderPath matches regex @"C:\\Users\\.*\\AppData\\Local\\Temp\\.*")
+  or (ProcessCommandLine matches regex @".*mkdir c:\\[a-z]{4} .*")
+)

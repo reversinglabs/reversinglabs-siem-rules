@@ -1,0 +1,10 @@
+// this query identifies potential malicious files dropped by recent DarkGate samples
+let DroppedFile = @"(?i)C:\\[a-zA-Z0-9]{4}\\(Autoit3.exe|script.au3)";
+(union isfuzzy=true
+(DeviceFileEvents
+| where ActionType == "FileCreated"
+| where FolderPath matches regex DroppedFile
+| extend timestamp = TimeGenerated, HostCustomEntity = DeviceName),
+(SysmonParser
+| where EventID == 11
+| where TargetFilename matches regex DroppedFile))
