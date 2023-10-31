@@ -1,0 +1,5 @@
+// this query identifies file creation events seen in recent DCRat samples
+let filenames = dynamic(["msedgewebview2", "msedgewebview2m", "SecurityHealthHostS", "SecHealthUIS", "MonAgentLauncherM", "RuntimeBrokerR", "SecurityHealthServiceS", @"C:\MshyperSession" ]);
+SysmonParser
+| where EventID == 11
+| where TargetFilename has_any (filenames)
