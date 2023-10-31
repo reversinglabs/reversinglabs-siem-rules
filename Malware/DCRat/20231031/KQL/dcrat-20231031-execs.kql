@@ -1,0 +1,8 @@
+// this query identifies possible new processes relating to dcrat
+SysmonParser
+| where EventID == 1
+| where Image == "C:\\MshyperSession\\blockHost.exe"
+| union 
+(SecurityEvent 
+| where EventID == 4688 
+| where NewProcessName == "C:\\MshyperSession\\blockHost.exe")

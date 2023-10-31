@@ -1,0 +1,18 @@
+// this query identifies behavior seen in recent DCRat samples where many scheduled
+// tasks are created in a short timespan.
+SysmonParser
+| where EventID == 1
+| where OriginalFileName == "schtasks.exe"
+| where CommandLine contains "/create"
+| summarize count() by bin(TimeGenerated, 1m), Computer
+// modify threshold as necessary
+| where count_ > 5
+| join (SysmonParser | where EventID == 1 and OriginalFileName == "schtasks.exe") on Computer
+| union (SecurityEvent
+| where EventID == 4688
+| where Process == "schtasks.exe"
+| where CommandLine contains "/create"
+| summarize count() by bin(TimeGenerated, 1m), Computer
+// modify threshold as necessary
+| where count_ > 5
+| join (SecurityEvent | where EventID == 4688 and Process == "schtasks.exe") on Computer)

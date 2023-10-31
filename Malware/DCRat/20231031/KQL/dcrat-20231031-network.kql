@@ -1,0 +1,12 @@
+// description: DCRat network indicators for 20231031
+let c2urls = external_data(c2url: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/DCRat/20231031/KQL/dcrat-20231031-c2urls.txt"];
+c2urls
+| extend parsed_url = parse_url(c2url)
+| extend domain = tostring(parsed_url.Host)
+| project domain
+| join 
+(SysmonParser
+| where EventID == 22
+| where RenderedDescription contains "dns") on $left.domain == $right.QueryName
+| union (CommonSecurityLog
+| where RequestURL in (c2urls))
