@@ -1,0 +1,10 @@
+// this query identifies a potential registry key created by recent netwire samples
+let KeyPath = @"(?i)\\SOFTWARE\\NetWire";
+SysmonParser
+| where (EventID == 12 and TargetObject contains strcat(@"HKCU", KeyPath))
+or (EventID == 13 and TargetObject contains strcat(@"HKCU", KeyPath, "\\HostId") and Details startswith "HostId-")
+| union (
+DeviceRegistryEvents
+| where (ActionType == "RegistryKeyCreated" and RegistryKey contains strcat(@"HKEY_CURRENT_USER", KeyPath))
+ or (ActionType == "RegistryValueSet" and RegistryKey contains strcat(KeyPath, "\\HostId") and RegistryValueData startswith "HostId-")
+)
