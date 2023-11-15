@@ -1,0 +1,10 @@
+// description: Ares loader network indicators for 20231113
+let indicators = external_data(c2: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/AresLoader/20231113/KQL/aresloader-20231113-c2.txt"];
+CommonSecurityLog
+| where RequestURL in (indicators) 
+    or DestinationHostName in (indicators) 
+    or DestinationIP in (indicators) 
+    or RequestClientApplication contains "AresLdr_v_3"
+| union (SysmonParser
+| where EventID == 22
+| where QueryName in (indicators))
