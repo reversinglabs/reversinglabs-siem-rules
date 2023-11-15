@@ -1,0 +1,11 @@
+// this query identifies possible new processes relating to AresLoader
+let tzcheck = @"C:\Windows\system32\cmd.exe /c tzutil /g";
+SysmonParser
+| where EventID == 1
+| where CommandLine contains tzcheck
+    or Company contains "KC Softwares"
+| union 
+(SecurityEvent
+| where EventID == 4688
+| where CommandLine contains tzcheck
+)
