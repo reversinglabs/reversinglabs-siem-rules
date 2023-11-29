@@ -1,0 +1,11 @@
+// this query identifies possible new processes relating to RisePro
+let taskCreate = @'schtasks /create /f /RU "user" /tr "C:\\ProgramData\\OfficeTrackerNMP131\\OfficeTrackerNMP131.exe" /tn "OfficeTrackerNMP131 HR" /sc HOURLY /rl HIGHEST';
+let procs = @"(?i)C:\\Users\\.*\\AppData\\.*\\(MaxLoonaFest131|FANBooster131)\\(MaxLoonaFest131|FANBooster131).exe";
+SysmonParser
+| where EventID == 1
+| where CommandLine contains taskCreate or Image matches regex (procs)
+| union 
+(SecurityEvent
+| where EventID == 4688
+| where CommandLine contains taskCreate or NewProcessName matches regex (procs)
+)

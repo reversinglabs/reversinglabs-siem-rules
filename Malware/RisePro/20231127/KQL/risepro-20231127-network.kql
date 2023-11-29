@@ -1,0 +1,11 @@
+// description: RisePro network indicators for 20231127
+let c2ips = external_data(c2: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/RisePro/20231127/KQL/risepro-20231127-c2.txt"];
+let payloadUrls = external_data(url: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/RisePro/20231127/KQL/risepro-20231127-payloadurls.txt"];
+let ipLookupDomain = dynamic(["api.2ip.ua","api.ipify.org","bot.whatismyipaddress.com","canireachthe.net","checkip.amazonaws.com","checkip.dyndns.org","curlmyip.com","db-ip.com","edns.ip-api.com","eth0.me","freegeoip.app","geoipy.com","getip.pro","icanhazip.com","ident.me","ifconfig.io","ifconfig.me","ip-api.com","ip.anysrc.net","ip.tyk.nu","ipaddressworld.com","ipecho.net","ipinfo.io","ipof.in","ipv4.icanhazip.com","ipv4bot.whatismyipaddress.com","ipwho.is","l2.io","myexternalip.com","wgetip.com","whatismyip.akamai.com","wtfismyip.com"]);
+CommonSecurityLog
+| where (RequestURL in (payloadUrls) or RequestURL in (ipLookupDomain)) 
+or DestinationHostName in (ipLookupDomain)
+or DestinationIP in (c2ips) 
+| union (SysmonParser
+| where EventID == 22
+| where QueryName in (c2ips) or QueryName in (ipLookupDomain))
