@@ -1,0 +1,10 @@
+// this query detects creation of files seen in recent RisePro samples
+let DroppedFile = @"(?i)C:\\users\\.*\\AppData\\Local\\Temp\\.*\\(passwords|information).txt";
+(union isfuzzy=true
+(DeviceFileEvents
+| where ActionType == "FileCreated"
+| where FolderPath matches regex DroppedFile
+| extend timestamp = TimeGenerated, HostCustomEntity = DeviceName),
+(SysmonParser
+| where EventID == 11
+| where TargetFilename == DroppedFile))
