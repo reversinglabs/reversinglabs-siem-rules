@@ -1,0 +1,9 @@
+// description: BunnyLoader network indicators for 20231206
+let c2urls = external_data(c2url: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/BunnyLoader/20231206/KQL/bunnyloader-20231206-c2urls.txt"];
+let c2ips = external_data(c2ip: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/BunnyLoader/20231206/KQL/bunnyloader-20231206-c2ips.txt"];
+CommonSecurityLog
+| where RequestURL has_any (c2urls) or RequestClientApplication has_any ("BunnyTasks", "BunnyShell") or DestinationIP in (c2ips)
+| union 
+(SysmonParser
+| where EventID == 3
+| where DestinationIp in (c2ips))
