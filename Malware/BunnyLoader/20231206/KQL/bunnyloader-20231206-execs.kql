@@ -1,0 +1,10 @@
+let avcheck = @"cmd.exe /c wmic /namespace:\\root\SecurityCenter2 path AntiVirusProduct get displayName /value";
+let exfil = @'(?i).*cmd.exe /c curl -F "file=@C:\\\\Users\\.*\\AppData\\Local\\BunnyLogs_.*.zip"';
+SysmonParser
+| where EventID == 1
+| where CommandLine contains avcheck or CommandLine matches regex exfil
+| union 
+(SecurityEvent
+| where EventID == 4688
+| where CommandLine contains avcheck or CommandLine matches regex exfil
+)

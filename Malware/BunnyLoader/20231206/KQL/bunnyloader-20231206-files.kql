@@ -1,0 +1,10 @@
+// this query detects creation of files seen in recent bunnyloader samples
+let bunnylogs = @".*\\AppData\\Local\\BunnyLogs.*";
+let bunnyarchive = @".*BunnyLogs-.*.zip"
+SysmonParser
+| where EventID == 11
+| where TargetFilename matches regex (bunnylogs) or TargetFilename matches regex (bunnyarchive)
+| union
+(DeviceFileEvents
+| where ActionType == "FileCreated"
+| where FolderPath matches regex (bunnylogs) or FileName matches regex (bunnyarchive))
