@@ -1,0 +1,9 @@
+// description: Lumma Stealer network indicators for 20231212
+let c2domains = external_data(c2: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/LummaStealer/20231212/KQL/lummastealer-20231212-c2domains.txt"];
+let payloadUrls = external_data(url: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/LummaStealer/20231212/KQL/lummastealer-20231212-payloadUrls.txt"];
+CommonSecurityLog
+| where RequestURL in (c2domains) or RequestURL in (payloadUrls) 
+| union 
+(SysmonParser
+| where EventID == 22
+| where QueryName in (c2domains) or QueryName in (payloadUrls))
