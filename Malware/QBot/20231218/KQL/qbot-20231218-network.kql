@@ -1,0 +1,8 @@
+// description: Qbot network indicators for 20231218
+let c2urls = external_data(url: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/QBot/20231218/KQL/qbot-20231218-c2urls.txt"];
+let c2ips = external_data(ip: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/QBot/20231218/KQL/qbot-20231218-c2ips.txt"];
+CommonSecurityLog
+| where RequestURL in (c2urls) or DestinationIP in (c2ips)
+| union 
+(SysmonParser
+| where (EventID == 22 and QueryName in (c2urls)) or (EventID == 3 and DestinationIp in (c2ips)))
