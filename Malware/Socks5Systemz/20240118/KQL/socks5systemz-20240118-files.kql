@@ -1,0 +1,8 @@
+// this query detects potential files created by Socks5Systemz malware
+SysmonParser
+| where EventID == 11
+| where TargetFilename matches regex @"\\ProgramData\\ts.*.dat"
+| union
+(DeviceFileEvents
+| where ActionType == "FileCreated"
+| where FolderPath matches regex @"\\ProgramData\\ts.*.dat")

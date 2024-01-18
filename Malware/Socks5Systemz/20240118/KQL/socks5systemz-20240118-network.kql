@@ -1,0 +1,8 @@
+// description: Socks5Systemz network indicators for 20240118
+let payloadUrls = external_data(url: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/Socks5Systemz/20240118/KQL/socks5systemz-20240118-payloadurls.txt"];
+let c2ips = external_data(ip: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/Socks5Systemz/20240118/KQL/socks5systemz-20240118-c2ips.txt"];
+CommonSecurityLog
+| where RequestURL in (payloadUrls) or DestinationIP in (c2ips)
+| union 
+(SysmonParser
+| where (EventID == 22 and QueryName in (payloadUrls)) or (EventID == 3 and DestinationIp in (c2ips)))
