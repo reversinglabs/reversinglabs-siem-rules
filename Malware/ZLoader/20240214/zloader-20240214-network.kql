@@ -1,0 +1,7 @@
+// description: ZLoader network indicators for 20240214
+let c2urls = external_data(url: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/ZLoader/20240214/KQL/zloader-20240214-c2urls.txt"];
+CommonSecurityLog
+| where RequestURL in (c2urls)
+| union 
+(SysmonParser
+| where EventID == 22 and QueryName in (c2urls))

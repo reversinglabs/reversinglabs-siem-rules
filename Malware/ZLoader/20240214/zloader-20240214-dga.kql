@@ -1,0 +1,73 @@
+// Slightly modified version of https://github.com/Azure/Azure-Sentinel/blob/master/Detections/CommonSecurityLog/MultiVendor-PossibleDGAContacts.yaml
+// this query attempts to detect network traffic relating to the latest ZLoader
+// domain generation algorithm (20 characters, .com TLD) 
+let triThreshold = 500;
+let startTime = 6h;
+let dgaLengthThreshold = 20;
+// fetch the alexa top 1M domains
+let top1M =  (externaldata (Position:int, Domain:string)   [@"http://s3-us-west-1.amazonaws.com/umbrella-static/top-1m.csv.zip"]  with (format="csv", zipPattern="*.csv"));
+// extract tri grams that are above our threshold - i.e. are common
+let triBaseline =   top1M
+| extend Domain = tolower(extract("([^.]*).{0,7}$", 1, Domain))
+| extend AllTriGrams = array_concat(extract_all("(...)", Domain), extract_all("(...)", substring(Domain, 1)), extract_all("(...)", substring(Domain, 2)))
+| mvexpand Trigram=AllTriGrams
+| summarize triCount=count() by tostring(Trigram)
+| sort by triCount desc
+| where triCount > triThreshold
+| distinct Trigram;
+// collect domain information from common security log, filter and extract the DGA candidate and its trigrams
+let allDataSummarized =   CommonSecurityLog
+| where TimeGenerated > ago(startTime)
+| where isnotempty(DestinationHostName)
+| extend Name = tolower(DestinationHostName)
+| distinct Name
+| where Name has "."
+| where Name endswith ".com"
+// extract DGA candidate
+| extend DGADomain = extract("([^.]*).{0,7}$", 1, Name)
+| where strlen(DGADomain) == dgaLengthThreshold
+// throw out domains with number in them
+| where DGADomain matches regex "^[A-Za-z]{0,}$"
+// extract the tri grams from summarized data
+| extend AllTriGrams = array_concat(extract_all("(...)", DGADomain), extract_all("(...)", substring(DGADomain, 1)), extract_all("(...)", substring(DGADomain, 2)));
+// throw out domains that have repeating tri's and/or >=3 repeating letters
+let nonRepeatingTris =  allDataSummarized
+| join kind=leftanti
+(
+    allDataSummarized
+    | mvexpand AllTriGrams
+    | summarize count() by tostring(AllTriGrams), DGADomain
+    | where count_ > 1
+    | distinct DGADomain
+)
+on DGADomain;
+// find domains that do not have a common tri in the baseline
+let dataWithRareTris =  nonRepeatingTris
+| join kind=leftanti
+(
+    nonRepeatingTris
+    | mvexpand AllTriGrams
+    | extend Trigram = tostring(AllTriGrams)
+    | distinct Trigram, DGADomain
+    | join kind=inner
+    (
+        triBaseline
+    )
+    on Trigram
+    | distinct DGADomain
+)
+on DGADomain;
+dataWithRareTris
+// join DGAs back on connection data
+| join kind=inner
+(
+    CommonSecurityLog
+    | where TimeGenerated > ago(startTime)
+    | where isnotempty(DestinationHostName)
+    | extend DestinationHostName = tolower(DestinationHostName)
+    | project-rename Name=DestinationHostName, DataSource=DeviceVendor
+    | summarize StartTime=min(TimeGenerated), EndTime=max(TimeGenerated) by Name, SourceIP, DestinationIP, DataSource
+)
+on Name
+| project StartTime, EndTime, Name, DGADomain, SourceIP, DestinationIP, DataSource
+| extend timestamp=StartTime, IPCustomEntity=SourceIP
