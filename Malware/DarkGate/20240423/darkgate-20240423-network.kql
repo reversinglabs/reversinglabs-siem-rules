@@ -1,0 +1,15 @@
+// description: DarkGate network indicators for 20240423
+let c2ips = external_data(c2ip: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/DarkGate/20240423/KQL/darkgate-20240423-c2ips.txt"];
+let c2domains = external_data(c2domain: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/DarkGate/20240423/KQL/darkgate-20240423-c2domains.txt"];
+let payloadURLs = external_data(payloadUrl: string) [h"https://raw.githubusercontent.com/reversinglabs/reversinglabs-siem-rules/master/Malware/DarkGate/20240423/KQL/darkgate-20240423-payloadUrls.txt"];
+CommonSecurityLog
+| where DestinationIP in (c2ips) 
+    or DestinationHostName in (c2domains) 
+    or RequestClientApplication contains @"WindowsPowerShell"
+    or RequestURL in (payloadURLs)
+| union 
+    (DeviceNetworkEvents
+    | where RemoteIP in (c2ips) or RemoteUrl in (payloadURLs)),
+    (SysmonParser
+    | where (EventID == 3 and DestinationIp in (c2ips)) 
+        or (EventID == 22 and QueryName in (c2domains) or QueryName in (payloadURLs)))
